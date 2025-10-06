@@ -1,0 +1,34 @@
+# kernel module build stuff
+*.ko
+*.o
+*.o.d
+*.so
+*.cmd
+*.mod
+*.mod.c
+*.symvers
+*.order
+**/build/
+
+# python stuff
+**/__pycache__/
+**/.ipynb_checkpoints
+api_key.py
+
+# generated files
+tcp_cc/kern_mod/tcp_heuristic.c
+tcp_cc/bpf_scaffolding/LLMCode.h
+*.log
+
+# let's ignore LLM generations for now
+*.txt
+tcp_cc/evaluate/logs/down
+**/results
+*.png
+**/output/ 
+
+# Do not ignore CMakeLists.txt
+!CMakeLists.txt
+
+# editor files
+.vscode/**

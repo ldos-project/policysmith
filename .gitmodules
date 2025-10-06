@@ -1,0 +1,6 @@
+[submodule "webcache/libCacheSim"]
+	path = webcache/libCacheSim
+	url = git@github.com:ldos-project/libcachesim.git
+[submodule "tcp_cc/evaluate/sage_traces"]
+	path = tcp_cc/evaluate/sage_traces
+	url = https://github.com/Soheil-ab/sage.git
