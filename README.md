@@ -1,5 +1,5 @@
 # PolicySmith
-This repository contains the code for PolicySmith, a system that discovers *heuristics* (i.e., code) for systems using LLMs and evolutionary search. This README will use the example of caching to demonstrate how to use PolicySmith; this codebase is extensible to support your task(s)
+This repository contains the code for [PolicySmith](https://arxiv.org/abs/2510.08803), a system that discovers *heuristics* (i.e., code) for systems using LLMs and evolutionary search. This README will use the example of caching to demonstrate how to use PolicySmith; this codebase is extensible to support your task(s)
 
 ![PolicySmith framework overview](./framework.png)
 
@@ -28,3 +28,17 @@ To use PolicySmith for your task:
 + Inside this directory, create a file called `./cpu_scheduling/interface.py` that subclasses `EvolveInterface` abstract class from `./Evolve.py`.
 + Look at the interface of `webcache` for more details / inspiration on what this should look like.
 + Profit?
+
+## Reference
+```
+@article{dwivedula2025policysmith,
+      title={Man-Made Heuristics Are Dead. Long Live Code Generators!}, 
+      author={Dwivedula, Rohit and Saxena, Divyanshu and Akella, Aditya and Chaudhuri, Swarat and Kim, Daehyeok},
+      year={2025},
+      eprint={2510.08803},
+      archivePrefix={arXiv},
+      primaryClass={cs.OS},
+      url={https://arxiv.org/abs/2510.08803}, 
+      note = {arXiv:2510.08803 [cs.OS]}
+}
+```
