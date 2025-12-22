@@ -1,0 +1,30 @@
+# kernel module build stuff
+*.ko
+*.o
+*.o.d
+*.so
+*.cmd
+*.mod
+*.mod.c
+*.symvers
+*.order
+**/build/
+
+# python stuff
+**/__pycache__/
+**/.ipynb_checkpoints
+api_key.py
+
+# let's ignore LLM generations for now
+*.txt
+**/results
+*.png
+**/output/ 
+
+# Do not ignore CMakeLists.txt
+!CMakeLists.txt
+
+# editor files
+.vscode/**
+
+api_key.sh
