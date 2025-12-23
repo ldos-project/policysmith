@@ -13,10 +13,10 @@ class WebCacheEvolve(EvolveInterface):
     def __init__(self, web_args = []):
         task_parser = argparse.ArgumentParser()
         task_parser.add_argument("--trace", type=str, default="CloudPhysics/w106.oracleGeneral.bin.zst")
-        task_parser.add_argument("--cache_sizes", type=float, nargs=1, default=[128], help="List of cache sizes to test")
-        task_parser.add_argument("--eval_cache_size", type=float, default=128, help="Final cache size (objective)")
+        task_parser.add_argument("--cache_sizes", type=float, nargs=1, default=[0.1], help="List of cache sizes to test")
+        task_parser.add_argument("--eval_cache_size", type=float, default=0.1, help="Final cache size (objective)")
         task_parser.add_argument('--percent', action='store_true', default=False, help='Using --percent means that cache_sizes and eval_cache_sizes are treated as a percentage (b/w 0 and 100)')
-        task_parser.add_argument('--byte', action='store_true', default=True, help='Use byte miss ratio instead of request miss ratio')
+        task_parser.add_argument('--byte', action='store_true', default=False, help='Use byte miss ratio instead of request miss ratio')
         self.task_args = task_parser.parse_args(web_args)
 
         assert self.task_args.eval_cache_size in self.task_args.cache_sizes, f"Eval cache size {self.task_args.eval_cache_size} must be in cache sizes {self.task_args.cache_sizes}"
