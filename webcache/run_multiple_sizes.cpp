@@ -1,6 +1,7 @@
 #include "main.h"
 
 const int NUM_SIZES = 1;
+float cache_percentages[NUM_SIZES] = {-1};
 uint64_t cache_sizes[NUM_SIZES];
 
 void run_one_cache_multiple_sizes(reader_t *reader) {
@@ -23,9 +24,9 @@ void run_one_cache_multiple_sizes(reader_t *reader) {
   
   for (int i = 0; i < NUM_SIZES; i++) {
     printf(
-      "{\"cache_name\": \"%s\", \"cache_size_mb\": %llu, \"n_miss\": %lu, \"n_req\": %lu, "
+      "{\"cache_name\": \"%s\", \"percent\": %.4f, \"cache_size_mb\": %llu, \"n_miss\": %lu, \"n_req\": %lu, "
       "\"miss_ratio\": %.4f, \"byte_miss_ratio\": %.4f, \"runtime_seconds\":%.6f}\n",
-        result[i].cache_name, result[i].cache_size / MiB, result[i].n_miss, result[i].n_req,
+        result[i].cache_name, cache_percentages[i], result[i].cache_size / MiB, result[i].n_miss, result[i].n_req,
         (double)result[i].n_miss / result[i].n_req,
         (double)result[i].n_miss_byte / result[i].n_req_byte,
         duration_sec
@@ -42,11 +43,21 @@ int main(int argc, char *argv[]) {
   reader_t *reader = get_reader(trace_path);
   TRACE_FOOTPRINT_BYTES = calculate_trace_footprint(reader);
 
+  bool percent;
+  if (std::string(argv[2]) == "percent") percent = true;
+  else if (std::string(argv[2]) == "mb") percent = false;
+  else assert(false);
+
   for(int i=3;i<3+NUM_SIZES;i++){
-    if(std::string(argv[2]) == "percent") cache_sizes[i-3] = std::stod(std::string(argv[i])) * TRACE_FOOTPRINT_BYTES;
-    else if(std::string(argv[2]) == "mb") cache_sizes[i-3] = std::stoi(std::string(argv[i])) * MiB;
-    else assert(false);
-    assert(cache_sizes[i-4] < TRACE_FOOTPRINT_BYTES);
+    if (percent) {
+      cache_percentages[i-3] = std::stod(std::string(argv[i]));
+      cache_sizes[i-3] = cache_percentages[i-3] * TRACE_FOOTPRINT_BYTES;
+    }
+    else {
+      cache_percentages[i-3] = (std::stod(std::string(argv[i]))* MiB) / TRACE_FOOTPRINT_BYTES;
+      cache_sizes[i-3] = std::stoi(std::string(argv[i])) * MiB;
+    }
+    assert(cache_sizes[i-3] < TRACE_FOOTPRINT_BYTES);
   }
 
   run_one_cache_multiple_sizes(reader);
