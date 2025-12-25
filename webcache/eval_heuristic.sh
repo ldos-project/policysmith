@@ -3,6 +3,8 @@ if [[ $# -ne 4 ]]; then
     exit 1
 fi
 
+# export MONGO_URI="mongodb://localhost:27017" 
+# note that the MONGO_URI does NOT end with a '/'
 if [[ -z "$MONGO_URI" ]]; then
     echo "MONGO_URI env var not set" >&2
     exit 1
@@ -23,10 +25,11 @@ mongosh "$MONGO_URI/policysmith" --eval "console.log(db.getCollection('$COL').fi
 i=0
 pushd build
     cmake ../ && make -j
-    for file in `find $DIR -type f -size -500M`;
+    for file in `find $DIR -type f`;
     do
-        ./eval_final_heuristic.o $file percent $PERCENT $COL $OID 2>/dev/null | mongoimport --db policysmith --collection evaluation
+        ./eval_final_heuristic.o $file percent $PERCENT $COL $OID 2>/dev/null | mongoimport --db policysmith --collection evaluation &
         i=$((i+1))
-        echo "[#$i] Done with $file"
     done
 popd
+
+wait
