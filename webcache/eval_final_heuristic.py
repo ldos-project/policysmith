@@ -6,8 +6,6 @@ import pymongo
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from bson import ObjectId
 
-import code
-
 # Default MongoDB URI
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
 if MONGO_URI.endswith("/"):
@@ -33,7 +31,7 @@ def main():
     parser.add_argument("--dataset", type=str, default="CloudPhysics", help="Name of trace dataset")
     parser.add_argument("--percent", type=float, default = 0.1, help="Fraction of trace footprint to use as cache size")
     parser.add_argument("--db", type=str, default="policysmith", help="Database name")
-    parser.add_argument("--max-parallel-workers", type=int, default=64)
+    parser.add_argument("--max-parallel-workers", type=int, default=20)
     args = parser.parse_args()
 
     # cleanup old code
@@ -70,7 +68,6 @@ def main():
             cmds.append(cmd)
 
     print(f"Running {len(cmds)} evaluations with {args.max_parallel_workers} workers...")
-    code.interact(local=locals())
     with ThreadPoolExecutor(max_workers=args.max_parallel_workers) as executor:
         futures = [executor.submit(run_eval, cmd, "build") for cmd in cmds]
         for i, f in enumerate(as_completed(futures)):
