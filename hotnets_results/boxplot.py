@@ -1,9 +1,11 @@
 import argparse
 import matplotlib.pyplot as plt
+import json
 import numpy as np
 import os
 import pandas as pd
 import pymongo
+import sys
 
 MONGO_CONNECTION_STRING = "mongodb://localhost:27017/"
 
@@ -44,7 +46,7 @@ def main(args):
     if not args.belady:
         df = df[(df['cache_name'] != 'Belady') & (df['cache_name'] != 'BeladySize')]
     
-    print(set(df['cache_name']))
+    print(set(df['cache_name']), file=sys.stderr)
     df = df[df['percent'] == args.cache_size_percent]
     df = df.reset_index(drop=True)
 
@@ -58,13 +60,13 @@ def main(args):
         mongo_ids_found = set(eval_df['mongo_id'])
         for name in args.eval_names:
             if name not in mongo_ids_found:
-                print(f"Warning: No eval data found for source hash {name}")
+                print(f"Warning: No eval data found for source hash {name}", file=sys.stderr)
 
         # get the eval trace list by source hash and find the intersection of all three
         trace_sets = [set(g['trace_name']) for _, g in eval_df.groupby('mongo_id')]
         eval_trace_list = sorted(set.intersection(*trace_sets))
-        print(f"Found {len(eval_trace_list)} traces common across eval names")
-        print(f"Missing traces: {set(df['trace_name']) - set(eval_trace_list)}")
+        print(f"Found {len(eval_trace_list)} traces common across eval names", file=sys.stderr)
+        print(f"Missing traces: {set(df['trace_name']) - set(eval_trace_list)}", file=sys.stderr)
 
         eval_df = eval_df[['trace_name', 'mongo_id', 'miss_ratio', 'percent']]
         eval_df.rename(columns={'mongo_id': 'cache_name'}, inplace=True)
@@ -77,9 +79,6 @@ def main(args):
         if args.plot_traces:
             eval_df = eval_df[eval_df['trace_name'].isin(args.plot_traces)].copy()
         
-        import code
-        code.interact(local=locals())
-
         assert len(eval_df['trace_name'].unique()) == len(df['trace_name'].unique()), f"Mismatch in traces between baseline and eval data: {len(df['trace_name'].unique())} vs {len(eval_df['trace_name'].unique())}. Difference: {set(df['trace_name']) - set(eval_df['trace_name'])}"
 
         # create final df by filtering baseline df to only include traces for which we have eval
@@ -104,7 +103,7 @@ def main(args):
     for key in algos:
         sorted_algos[key] = sorted(algos[key].items(), key=lambda x: x[1])  # Sort by miss_ratio    
 
-    print(f"Plotting {len(sorted_algos)} traces.")
+    print(f"Plotting {len(sorted_algos)} traces.", file=sys.stderr)
 
     # Get the average miss_ratio for each algorithm across all traces
     miss_ratio_curr_cache_size = {}
@@ -165,9 +164,11 @@ def main(args):
     algo_list = sorted(algo_list, key=lambda x: avg_miss_ratio_curr_cache_size[x])
 
     if args.improvement:
-        print("Miss ratio improvements over FIFO:")
+        print("Miss ratio improvements over FIFO:", file=sys.stderr)
     else:
-        print("Raw hit rates:")
+        print("Raw hit rates:", file=sys.stderr)
+
+    json_out = {}
     for algo in algo_list:
         plt.boxplot(
             miss_ratio_curr_cache_size[algo],
@@ -181,8 +182,11 @@ def main(args):
             showfliers=False,
             medianprops=dict(visible=False)
         )
-        print(f"{rename_algo(algo):10s}: {np.mean(miss_ratio_curr_cache_size[algo]):.4f}")
-
+        print(f'"{rename_algo(algo)}": {np.mean(miss_ratio_curr_cache_size[algo]):.4f},', file=sys.stderr)
+        json_out[rename_algo(algo)] = float(np.mean(miss_ratio_curr_cache_size[algo]))
+    if args.json:
+        print(json.dumps(json_out, indent=2))
+    
     # plt.ylim(-0.3, 1.0)az
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
@@ -191,7 +195,7 @@ def main(args):
 
     labels = [rename_algo(algo, dataset=args.dataset) for algo in algo_list]
     plt.xticks(range(len(algo_list)), labels, rotation=90, fontsize=18)
-
+    
     if args.improvement:
         plt.ylabel("Miss Ratio\n(improvement over FIFO)", fontsize=15)
     else:
@@ -207,7 +211,7 @@ def main(args):
         )
         plt.subplots_adjust(bottom=0.35)
     plt.savefig(save_loc, dpi=200, bbox_inches='tight')
-    print(f"Saved to ./{save_loc}")
+    print(f"Saved to ./{save_loc}", file=sys.stderr)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Boxplot comparison of caching algorithms on (a) traces from a specific dataset, and (b) of a certain size (e.g. 10 percent of trace footprint)")
@@ -218,6 +222,7 @@ if __name__ == "__main__":
     parser.add_argument('--eval-names', nargs='+', default=None, help='List of new heuristics to include in the plot. Must be in the format <object-id> (space-separated).')
     parser.add_argument('--raw', action='store_false', dest='improvement', help='Plot raw miss ratios instead of improvement over FIFO.')
     parser.add_argument('--cluster', type=str, help='Which cluster to use.')
+    parser.add_argument('--json', action='store_true', default=False, help='Output in JSON.')
     parser.set_defaults(improvement=True)
     args = parser.parse_args()
     main(args)
