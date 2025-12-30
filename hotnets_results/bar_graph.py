@@ -13,11 +13,11 @@ RESULTS = [
     ("PS-C", "cluster_2", "686ad41f3626d4810100b30d"),
     ("PS-A", "cluster_3", "686aea309ba953162c4e686c"),
     ("cluster_4", "cluster_4", "694bce0cf0213f4f0c8be157"),
-    # ("cluster_5", "cluster_5", "694e692ca6d7defb77190246"),
-    # ("cluster_6", "cluster_6", "694b92356bffc1e60e6f7d58"),
-    # ("cluster_7", "cluster_7", "694b8e0b645759a64e3b884c"),
-    # ("cluster_8", "cluster_8", "694c09c690ab97745c60a416"),
-    # ("cluster_9", "cluster_9", "694ee24e8974ab8c731fe817")
+    ("cluster_5", "cluster_5", "694e692ca6d7defb77190246"),
+    ("cluster_6", "cluster_6", "694b92356bffc1e60e6f7d58"),
+    ("cluster_7", "cluster_7", "694b8e0b645759a64e3b884c"),
+    ("cluster_8", "cluster_8", "694c09c690ab97745c60a416"),
+    ("cluster_9", "cluster_9", "694ee24e8974ab8c731fe817")
 ]
 
 def get_data(dataset):

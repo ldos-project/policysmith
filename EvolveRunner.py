@@ -33,7 +33,7 @@ class EvolutionRunner:
         self.n_build_retries = n_build_retries
 
         self.client = MongoClient(MONGO_CONNECTION_STRING)
-        self.db = self.client["policysmith"]
+        self.db = self.client["policysmith_nosize"]
 
         assert self.task_name in self.EVOLVE_REGISTRY.keys()
         assert self.llm_name in ALL_LLM_MODELS.keys()

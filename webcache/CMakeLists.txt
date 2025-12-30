@@ -30,8 +30,8 @@ include_directories(libCacheSim)
 add_subdirectory(libCacheSim)
 
 # The main executable to run
-add_executable(run_multiple_sizes.o run_multiple_sizes.cpp)
-target_link_libraries(run_multiple_sizes.o libCacheSim m ${GLib_LIBRARY} ${ZSTD_LIBRARIES})
+add_executable(run_algo.o run_algo.cpp)
+target_link_libraries(run_algo.o libCacheSim m ${GLib_LIBRARY} ${ZSTD_LIBRARIES})
 
 add_executable(run_multiple_algos.o run_multiple_algos.cpp)
 target_link_libraries(run_multiple_algos.o libCacheSim m ${GLib_LIBRARY} ${ZSTD_LIBRARIES})
@@ -47,4 +47,4 @@ add_custom_target(run_install_libcachesim
     COMMAND bash ${CMAKE_SOURCE_DIR}/libCacheSim/scripts/install_libcachesim.sh
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
-add_dependencies(run_multiple_sizes.o run_install_libcachesim)
+add_dependencies(run_algo.o run_install_libcachesim)
